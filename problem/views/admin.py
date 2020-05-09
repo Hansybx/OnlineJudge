@@ -553,8 +553,8 @@ class ImportProblemAPI(CSRFExemptAPIView, TestCaseZipProcessor):
         form = UploadProblemForm(request.POST, request.FILES)
         if form.is_valid():
             file = form.cleaned_data["file"]
-            # tmp_file = f"/tmp/{rand_str()}.zip"
-            tmp_file = f"E:/OnlineJudge/tmp/{rand_str()}.zip"
+            tmp_file = f"/tmp/{rand_str()}.zip"
+            # tmp_file = f"E:/OnlineJudge/tmp/{rand_str()}.zip"
             with open(tmp_file, "wb") as f:
                 for chunk in file:
                     f.write(chunk)
