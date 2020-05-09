@@ -30,7 +30,7 @@ from ..serializers import (CreateContestProblemSerializer, CompileSPJSerializer,
                            FPSProblemSerializer)
 from ..utils import TEMPLATE_BASE, build_problem_template
 
-
+# 测试文件zip
 class TestCaseZipProcessor(object):
     def process_zip(self, uploaded_zip_file, spj, dir=""):
         try:
@@ -110,7 +110,7 @@ class TestCaseZipProcessor(object):
                 else:
                     return sorted(ret, key=natural_sort_key)
 
-
+# 测试样例
 class TestCaseAPI(CSRFExemptAPIView, TestCaseZipProcessor):
     request_parsers = ()
 
@@ -495,7 +495,7 @@ class AddContestProblemAPI(APIView):
         problem.tags.set(tags)
         return self.success()
 
-
+# 导出/入问题
 class ExportProblemAPI(APIView):
     def choose_answers(self, user, problem):
         ret = []
@@ -553,7 +553,8 @@ class ImportProblemAPI(CSRFExemptAPIView, TestCaseZipProcessor):
         form = UploadProblemForm(request.POST, request.FILES)
         if form.is_valid():
             file = form.cleaned_data["file"]
-            tmp_file = f"/tmp/{rand_str()}.zip"
+            # tmp_file = f"/tmp/{rand_str()}.zip"
+            tmp_file = f"E:/OnlineJudge/tmp/{rand_str()}.zip"
             with open(tmp_file, "wb") as f:
                 for chunk in file:
                     f.write(chunk)

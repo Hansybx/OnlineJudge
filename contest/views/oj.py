@@ -18,7 +18,7 @@ from ..serializers import ContestAnnouncementSerializer
 from ..serializers import ContestSerializer, ContestPasswordVerifySerializer
 from ..serializers import OIContestRankSerializer, ACMContestRankSerializer
 
-
+# 公告 列表
 class ContestAnnouncementListAPI(APIView):
     @check_contest_permission(check_type="announcements")
     def get(self, request):
@@ -87,7 +87,7 @@ class ContestPasswordVerifyAPI(APIView):
         request.session.modified = True
         return self.success(True)
 
-
+# 竞赛进入许可
 class ContestAccessAPI(APIView):
     @login_required
     def get(self, request):
@@ -101,7 +101,7 @@ class ContestAccessAPI(APIView):
         session_pass = request.session.get(CONTEST_PASSWORD_SESSION_KEY, {}).get(contest.id)
         return self.success({"access": check_contest_password(session_pass, contest.password)})
 
-
+# 榜单
 class ContestRankAPI(APIView):
     def get_rank(self):
         if self.contest.rule_type == ContestRuleType.ACM:

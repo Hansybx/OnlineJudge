@@ -113,12 +113,16 @@ class UserAdminAPI(APIView):
             return self.success(UserAdminSerializer(user).data)
 
         user = User.objects.all().order_by("-create_time")
-
+        print('userList')
         keyword = request.GET.get("keyword", None)
         if keyword:
+            # user = user.filter(Q(username__icontains=keyword) |
+            #                    Q(userprofile__real_name__icontains=keyword) |
+            #                    Q(email__icontains=keyword))
             user = user.filter(Q(username__icontains=keyword) |
                                Q(userprofile__real_name__icontains=keyword) |
-                               Q(email__icontains=keyword))
+                               Q(email__icontains=keyword) |
+                               Q(classNum__icontains=keyword)) # add todo
         return self.success(self.paginate_data(request, user, UserAdminSerializer))
 
     @super_admin_required

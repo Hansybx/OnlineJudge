@@ -12,7 +12,7 @@ class ProblemTagAPI(APIView):
         tags = ProblemTag.objects.annotate(problem_count=Count("problem")).filter(problem_count__gt=0)
         return self.success(TagSerializer(tags, many=True).data)
 
-
+# 随机选取一题
 class PickOneAPI(APIView):
     def get(self, request):
         problems = Problem.objects.filter(contest_id__isnull=True, visible=True)

@@ -26,6 +26,7 @@ class UserManager(models.Manager):
 class User(AbstractBaseUser):
     username = models.TextField(unique=True)
     email = models.TextField(null=True)
+    classNum = models.TextField(null=True)  # added
     create_time = models.DateTimeField(auto_now_add=True, null=True)
     # One of UserType
     admin_type = models.TextField(default=AdminType.REGULAR_USER)
@@ -68,6 +69,8 @@ class User(AbstractBaseUser):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # print("1" + str(classNum))
+
     # acm_problems_status examples:
     # {
     #     "problems": {
@@ -93,7 +96,9 @@ class UserProfile(models.Model):
     mood = models.TextField(null=True)
     github = models.TextField(null=True)
     school = models.TextField(null=True)
-    major = models.TextField(null=True)
+
+    classNum = models.TextField(null=True)
+    major = models.TextField(null=True)  # changed
     language = models.TextField(null=True)
     # for ACM
     accepted_number = models.IntegerField(default=0)

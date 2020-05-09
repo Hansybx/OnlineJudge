@@ -20,10 +20,10 @@ from ..serializers import (ContestAnnouncementSerializer, ContestAdminSerializer
                            EditConetestSeriaizer, EditContestAnnouncementSerializer,
                            ACMContesHelperSerializer, )
 
-
+# 比赛api
 class ContestAPI(APIView):
     @validate_serializer(CreateConetestSeriaizer)
-    def post(self, request):
+    def post(self, request):   # 生成
         data = request.data
         data["start_time"] = dateutil.parser.parse(data["start_time"])
         data["end_time"] = dateutil.parser.parse(data["end_time"])
@@ -194,7 +194,7 @@ class ACMContestHelper(APIView):
         rank.save(update_fields=("submission_info",))
         return self.success()
 
-
+# 比赛提交下载
 class DownloadContestSubmissions(APIView):
     def _dump_submissions(self, contest, exclude_admin=True):
         problem_ids = contest.problem_set.all().values_list("id", "_id")

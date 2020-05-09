@@ -29,7 +29,7 @@ from .serializers import (CreateEditWebsiteConfigSerializer,
                           JudgeServerHeartbeatSerializer,
                           JudgeServerSerializer, TestSMTPConfigSerializer, EditJudgeServerSerializer)
 
-
+# SMTP服务器设置
 class SMTPAPI(APIView):
     @super_admin_required
     def get(self, request):
@@ -86,7 +86,7 @@ class SMTPTestAPI(APIView):
             return self.error(msg)
         return self.success()
 
-
+# 网站信息设置
 class WebsiteConfigAPI(APIView):
     def get(self, request):
         ret = {key: getattr(SysOptions, key) for key in
@@ -104,7 +104,7 @@ class WebsiteConfigAPI(APIView):
             setattr(SysOptions, k, v)
         return self.success()
 
-
+# 判题机
 class JudgeServerAPI(APIView):
     @super_admin_required
     def get(self, request):
@@ -162,7 +162,7 @@ class JudgeServerHeartbeatAPI(CSRFExemptAPIView):
 
         return self.success()
 
-
+# 语言选择
 class LanguagesAPI(APIView):
     def get(self, request):
         return self.success({"languages": SysOptions.languages, "spj_languages": SysOptions.spj_languages})

@@ -17,12 +17,12 @@ from options.options import SysOptions
 from utils.api import APIView, validate_serializer, CSRFExemptAPIView
 from utils.captcha import Captcha
 from utils.shortcuts import rand_str, img2base64, datetime2str
-from ..decorators import login_required
+from ..decorators import login_required, super_admin_required
 from ..models import User, UserProfile, AdminType
 from ..serializers import (ApplyResetPasswordSerializer, ResetPasswordSerializer,
                            UserChangePasswordSerializer, UserLoginSerializer,
                            UserRegisterSerializer, UsernameOrEmailCheckSerializer,
-                           RankInfoSerializer, UserChangeEmailSerializer, SSOSerializer)
+                           RankInfoSerializer, UserChangeEmailSerializer, SSOSerializer, UserChangeClassNumSerializer)
 from ..serializers import (TwoFactorAuthCodeSerializer, UserProfileSerializer,
                            EditUserProfileSerializer, ImageUploadForm)
 from ..tasks import send_email_async
@@ -61,6 +61,7 @@ class UserProfileAPI(APIView):
         return self.success(UserProfileSerializer(user_profile, show_real_name=True).data)
 
 
+# 头像上传
 class AvatarUploadAPI(APIView):
     request_parsers = ()
 
@@ -218,6 +219,7 @@ class UserRegisterAPI(APIView):
         data = request.data
         data["username"] = data["username"].lower()
         data["email"] = data["email"].lower()
+        data["classNum"] = data["classNum"].lower()  # added
         captcha = Captcha(request)
         if not captcha.check(data["captcha"]):
             return self.error("Invalid captcha")
@@ -225,13 +227,16 @@ class UserRegisterAPI(APIView):
             return self.error("Username already exists")
         if User.objects.filter(email=data["email"]).exists():
             return self.error("Email already exists")
-        user = User.objects.create(username=data["username"], email=data["email"])
+        # user = User.objects.create(username=data["username"], email=data["email"])
+        user = User.objects.create(username=data["username"], email=data["email"], classNum=data["classNum"])
         user.set_password(data["password"])
         user.save()
-        UserProfile.objects.create(user=user)
+        # UserProfile.objects.create(user=user)
+        UserProfile.objects.create(user=user, classNum=data["classNum"])
         return self.success("Succeeded")
 
 
+# 更换邮箱
 class UserChangeEmailAPI(APIView):
     @validate_serializer(UserChangeEmailSerializer)
     @login_required
@@ -249,6 +254,25 @@ class UserChangeEmailAPI(APIView):
                 return self.error("The email is owned by other account")
             user.email = data["new_email"]
             user.save()
+            return self.success("Succeeded")
+        else:
+            return self.error("Wrong password")
+
+
+# 更换classNum add todo
+class UserChangeClassNumAPI(APIView):
+    @validate_serializer(UserChangeClassNumSerializer)
+    @login_required
+    def post(self, request):
+        data = request.data
+        user = request.user
+        user_type = user.admin_type
+        user.is_super_admin()
+        if user:
+            user.classNum = data["classNum"]
+            user.admin_type = user_type
+            user.save()
+            print('over')
             return self.success("Succeeded")
         else:
             return self.error("Wrong password")
@@ -433,4 +457,5 @@ class SSOAPI(CSRFExemptAPIView):
             user = User.objects.get(auth_token=request.data["token"])
         except User.DoesNotExist:
             return self.error("User does not exist")
-        return self.success({"username": user.username, "avatar": user.userprofile.avatar, "admin_type": user.admin_type})
+        return self.success(
+            {"username": user.username, "avatar": user.userprofile.avatar, "admin_type": user.admin_type})

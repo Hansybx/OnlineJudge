@@ -20,6 +20,7 @@ class UserRegisterSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=32)
     password = serializers.CharField(min_length=6)
     email = serializers.EmailField(max_length=64)
+    classNum = serializers.CharField()
     captcha = serializers.CharField()
 
 
@@ -33,6 +34,11 @@ class UserChangeEmailSerializer(serializers.Serializer):
     password = serializers.CharField()
     new_email = serializers.EmailField(max_length=64)
     tfa_code = serializers.CharField(required=False, allow_blank=True)
+
+
+# add todo
+class UserChangeClassNumSerializer(serializers.Serializer):
+    classNum = serializers.CharField(max_length=64, allow_blank=True, required=False)
 
 
 class GenerateUserSerializer(serializers.Serializer):
@@ -54,7 +60,9 @@ class UserAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "username", "email", "admin_type", "problem_permission", "real_name",
-                  "create_time", "last_login", "two_factor_auth", "open_api", "is_disabled"]
+                  "create_time", "last_login", "two_factor_auth", "open_api", "is_disabled", "classNum"]
+        # fields = ["id", "username", "email", "admin_type", "problem_permission", "real_name",
+        #           "create_time", "last_login", "two_factor_auth", "open_api", "is_disabled"]
 
     def get_real_name(self, obj):
         return obj.userprofile.real_name
@@ -103,8 +111,9 @@ class EditUserProfileSerializer(serializers.Serializer):
     blog = serializers.URLField(max_length=256, allow_blank=True, required=False)
     mood = serializers.CharField(max_length=256, allow_blank=True, required=False)
     github = serializers.CharField(max_length=64, allow_blank=True, required=False)
-    school = serializers.CharField(max_length=64, allow_blank=True, required=False)
+    # school = serializers.CharField(max_length=64, allow_blank=True, required=False) #changed
     major = serializers.CharField(max_length=64, allow_blank=True, required=False)
+    classNum = serializers.CharField(max_length=64, allow_blank=True, required=False)  # added
     language = serializers.CharField(max_length=32, allow_blank=True, required=False)
 
 

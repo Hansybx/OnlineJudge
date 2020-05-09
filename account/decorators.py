@@ -8,7 +8,7 @@ from utils.api import JSONResponse, APIError
 from utils.constants import CONTEST_PASSWORD_SESSION_KEY
 from .models import ProblemPermission
 
-
+# 基础校验类
 class BasePermissionDecorator(object):
     def __init__(self, func):
         self.func = func
@@ -33,6 +33,7 @@ class BasePermissionDecorator(object):
         raise NotImplementedError()
 
 
+# 对应要求校验类
 class login_required(BasePermissionDecorator):
     def check_permission(self):
         return self.request.user.is_authenticated
