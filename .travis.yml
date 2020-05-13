@@ -9,5 +9,8 @@ install:
     - ./init_db.sh
 script:
     - docker ps -a
+    - docker login --username="$DOCKER_USERNAME" registry.cn-hangzhou.aliyuncs.com --password-stdin
+    - docker build -t oj-backend:latest .
+    - docker images
 notifications:
     slack: onlinejudgeteam:BzBz8UFgmS5crpiblof17K2W
