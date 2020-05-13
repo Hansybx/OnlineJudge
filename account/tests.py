@@ -175,7 +175,7 @@ class UserRegisterAPITest(CaptchaTest):
         self.register_url = self.reverse("user_register_api")
         self.captcha = rand_str(4)
 
-        self.data = {"username": "test_user", "password": "testuserpassword",
+        self.data = {"username": "test_user", "password": "testuserpassword","classNum": "1822107",
                      "real_name": "real_name", "email": "test@qduoj.com",
                      "captcha": self._set_captcha(self.client.session)}
 
