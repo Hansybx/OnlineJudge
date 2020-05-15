@@ -9,8 +9,8 @@ DATABASES = {
         'HOST': '127.0.0.1',
         'PORT': 5435,
         'NAME': "onlinejudge",
-        'USER': "postgres",
-        'PASSWORD': 'hzy2000'
+        'USER': "onlinejudge",
+        'PASSWORD': 'onlinejudge'
     }
 }
 
