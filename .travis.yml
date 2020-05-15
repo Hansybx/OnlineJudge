@@ -9,8 +9,8 @@ install:
     - ./init_db.sh
 script:
     - docker ps -a
-    - docker login --username=hansybx registry.cn-hangzhou.aliyuncs.com
-    - docker build -t oj-backend:latest .
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - docker build -t oj-backend-test:latest .
     - docker images
     - docker push oj-backend:latest
     - echo "aaa"
