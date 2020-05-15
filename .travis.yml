@@ -13,6 +13,7 @@ script:
     - docker build -t oj-backend:latest .
     - docker images
     - docker tag oj-backend:latest registry.cn-hangzhou.aliyuncs.com/oj-just/oj-backend:latest
+    - docker images
     - docker push  registry.cn-hangzhou.aliyuncs.com/oj-just/oj-backend:latest
 notifications:
     slack: onlinejudgeteam:BzBz8UFgmS5crpiblof17K2W
