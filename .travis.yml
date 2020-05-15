@@ -10,8 +10,8 @@ install:
 script:
     - docker ps -a
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    - docker build -t oj-backend:registry.cn-hangzhou.aliyuncs.com/oj-just/oj-backend .
+    - docker build -t registry.cn-hangzhou.aliyuncs.com/oj-just/oj-backend:latest .
     - docker images
-    - docker push registry.cn-hangzhou.aliyuncs.com/oj-just/oj-backend:latest
+    - docker push  registry.cn-hangzhou.aliyuncs.com/oj-just/oj-backend:latest
 notifications:
     slack: onlinejudgeteam:BzBz8UFgmS5crpiblof17K2W
