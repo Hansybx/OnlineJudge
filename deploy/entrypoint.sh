@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 APP=/app
 DATA=/data
