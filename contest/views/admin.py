@@ -4,6 +4,7 @@ import zipfile
 from ipaddress import ip_network
 
 import dateutil.parser
+from django.db.models import Q
 from django.http import FileResponse
 
 from account.decorators import check_contest_permission, ensure_created_by
@@ -28,6 +29,7 @@ class ContestAPI(APIView):
         data["start_time"] = dateutil.parser.parse(data["start_time"])
         data["end_time"] = dateutil.parser.parse(data["end_time"])
         data["created_by"] = request.user
+        print(data)
         if data["end_time"] <= data["start_time"]:
             return self.error("Start time must occur earlier than end time")
         if data.get("password") and data["password"] == "":
@@ -54,6 +56,10 @@ class ContestAPI(APIView):
             return self.error("Start time must occur earlier than end time")
         if not data["password"]:
             data["password"] = None
+        if not data["course_num"]:
+            data["course_num"] = None
+        if not data["teacher"]:
+            data["teacher"] = None
         for ip_range in data["allowed_ip_ranges"]:
             try:
                 ip_network(ip_range, strict=False)
@@ -84,7 +90,7 @@ class ContestAPI(APIView):
 
         keyword = request.GET.get("keyword")
         if keyword:
-            contests = contests.filter(title__contains=keyword)
+            contests = contests.filter(Q(title__contains=keyword) | Q(teacher__contains=keyword) | Q(course_num__contains=keyword))
         return self.success(self.paginate_data(request, contests, ContestAdminSerializer))
 
 

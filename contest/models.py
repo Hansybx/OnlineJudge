@@ -25,6 +25,14 @@ class Contest(models.Model):
     visible = models.BooleanField(default=True)
     allowed_ip_ranges = JSONField(default=list)
 
+    # added
+    # 是否为课程为true时是
+    course = models.BooleanField(default=False)
+    # 课程号
+    course_num = models.TextField(null=True)
+    # 老师
+    teacher = models.TextField(null=True)
+
     @property
     def status(self):
         if self.start_time > now():

@@ -3,14 +3,23 @@ from django.db.models import Q, Count
 from utils.api import APIView
 from account.decorators import check_contest_permission
 from ..models import ProblemTag, Problem, ProblemRuleType
-from ..serializers import ProblemSerializer, TagSerializer, ProblemSafeSerializer
-from contest.models import ContestRuleType
+from ..serializers import ProblemSerializer, TagSerializer, ProblemSafeSerializer, ContestProblemSerializer, \
+    ContestProblemSafeSerializer
+from contest.models import ContestRuleType, Contest
 
 
 class ProblemTagAPI(APIView):
     def get(self, request):
         tags = ProblemTag.objects.annotate(problem_count=Count("problem")).filter(problem_count__gt=0)
         return self.success(TagSerializer(tags, many=True).data)
+
+
+# added
+class ContestProblemTagAPI(APIView):
+    def get(self, request):
+        tags = ProblemTag.objects.annotate(problem_count=Count("problem")).filter(problem_count__gt=0)
+        return self.success(TagSerializer(tags, many=True).data)
+
 
 # 随机选取一题
 class PickOneAPI(APIView):
@@ -93,6 +102,7 @@ class ContestProblemAPI(APIView):
     @check_contest_permission(check_type="problems")
     def get(self, request):
         problem_id = request.GET.get("problem_id")
+        keyword = request.GET.get("keyword")
         if problem_id:
             try:
                 problem = Problem.objects.select_related("created_by").get(_id=problem_id,
@@ -101,16 +111,21 @@ class ContestProblemAPI(APIView):
             except Problem.DoesNotExist:
                 return self.error("Problem does not exist.")
             if self.contest.problem_details_permission(request.user):
-                problem_data = ProblemSerializer(problem).data
+                problem_data = ContestProblemSerializer(problem).data   # modify
                 self._add_problem_status(request, [problem_data, ])
             else:
-                problem_data = ProblemSafeSerializer(problem).data
+                problem_data = ContestProblemSafeSerializer(problem).data   # modify
             return self.success(problem_data)
+
+        contests = Contest.objects.select_related("created_by").filter(visible=True)
+
+        if keyword:
+            contests = contests.filter(Q(title__contains=keyword))
 
         contest_problems = Problem.objects.select_related("created_by").filter(contest=self.contest, visible=True)
         if self.contest.problem_details_permission(request.user):
-            data = ProblemSerializer(contest_problems, many=True).data
+            data = ContestProblemSerializer(contest_problems, many=True).data
             self._add_problem_status(request, data)
         else:
-            data = ProblemSafeSerializer(contest_problems, many=True).data
+            data = ContestProblemSafeSerializer(contest_problems, many=True).data
         return self.success(data)

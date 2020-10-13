@@ -27,11 +27,23 @@ class EditConetestSeriaizer(serializers.Serializer):
     real_time_rank = serializers.BooleanField()
     allowed_ip_ranges = serializers.ListField(child=serializers.CharField(max_length=32))
 
+    course = serializers.BooleanField()
+    # 课程号
+    course_num = serializers.CharField(allow_blank=True, allow_null=True)
+    # 老师
+    teacher = serializers.CharField(allow_blank=True, allow_null=True)
+
 
 class ContestAdminSerializer(serializers.ModelSerializer):
     created_by = UsernameSerializer()
     status = serializers.CharField()
     contest_type = serializers.CharField()
+
+    course = serializers.BooleanField()
+    # 课程号
+    course_num = serializers.CharField()
+    # 老师
+    teacher = serializers.CharField()
 
     class Meta:
         model = Contest

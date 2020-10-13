@@ -27,7 +27,7 @@ from ..serializers import (CreateContestProblemSerializer, CompileSPJSerializer,
                            ProblemAdminSerializer, TestCaseUploadForm, ContestProblemMakePublicSerializer,
                            AddContestProblemSerializer, ExportProblemSerializer,
                            ExportProblemRequestSerialzier, UploadProblemForm, ImportProblemSerializer,
-                           FPSProblemSerializer)
+                           FPSProblemSerializer, ContestProblemAdminSerializer)
 from ..utils import TEMPLATE_BASE, build_problem_template
 
 # 测试文件zip
@@ -151,7 +151,8 @@ class TestCaseAPI(CSRFExemptAPIView, TestCaseZipProcessor):
             file = form.cleaned_data["file"]
         else:
             return self.error("Upload failed")
-        zip_file = f"/tmp/{rand_str()}.zip"
+        # zip_file = f"/tmp/{rand_str()}.zip"
+        zip_file = f"E:/OnlineJudge/tmp/{rand_str()}.zip"
         with open(zip_file, "wb") as f:
             for chunk in file:
                 f.write(chunk)
@@ -324,6 +325,11 @@ class ContestProblemAPI(ProblemBase):
         if not _id:
             return self.error("Display ID is required")
 
+        try:
+            temp = int(data["_id"])
+        except Exception as e:
+            return self.error("DispalyID must be integer")
+
         if Problem.objects.filter(_id=_id, contest=contest).exists():
             return self.error("Duplicate Display id")
 
@@ -370,12 +376,13 @@ class ContestProblemAPI(ProblemBase):
         keyword = request.GET.get("keyword")
         if keyword:
             problems = problems.filter(title__contains=keyword)
-        return self.success(self.paginate_data(request, problems, ProblemAdminSerializer))
+        return self.success(self.paginate_data(request, problems, ContestProblemAdminSerializer))
 
     @validate_serializer(EditContestProblemSerializer)
     def put(self, request):
         data = request.data
         user = request.user
+        print(data)
 
         try:
             contest = Contest.objects.get(id=data.pop("contest_id"))
@@ -386,6 +393,11 @@ class ContestProblemAPI(ProblemBase):
         if data["rule_type"] != contest.rule_type:
             return self.error("Invalid rule type")
 
+        try:
+            temp = int(data["_id"])
+        except Exception as e:
+            return self.error("DispalyID must be integer")
+
         problem_id = data.pop("id")
 
         try:
@@ -394,9 +406,10 @@ class ContestProblemAPI(ProblemBase):
             return self.error("Problem does not exist")
 
         _id = data["_id"]
+        is_drag = data["is_drag"]  # add
         if not _id:
             return self.error("Display ID is required")
-        if Problem.objects.exclude(id=problem_id).filter(_id=_id, contest=contest).exists():
+        if Problem.objects.exclude(id=problem_id).filter(_id=_id, contest=contest).exists() and is_drag is False:
             return self.error("Display ID already exists")
 
         error_info = self.common_checks(request)
@@ -482,6 +495,13 @@ class AddContestProblemAPI(APIView):
             return self.error("Contest has ended")
         if Problem.objects.filter(contest=contest, _id=data["display_id"]).exists():
             return self.error("Duplicate display id in this contest")
+        # if isinstance(data["display_id"],int) is False:
+        #     return self.error("DispalyID must be integer")
+        try:
+            temp = int(data["display_id"])
+        except Exception as e:
+            return self.error("DispalyID must be integer")
+
 
         tags = problem.tags.all()
         problem.pk = None
@@ -553,8 +573,8 @@ class ImportProblemAPI(CSRFExemptAPIView, TestCaseZipProcessor):
         form = UploadProblemForm(request.POST, request.FILES)
         if form.is_valid():
             file = form.cleaned_data["file"]
-            tmp_file = f"/tmp/{rand_str()}.zip"
-            # tmp_file = f"E:/OnlineJudge/tmp/{rand_str()}.zip"
+            # tmp_file = f"/tmp/{rand_str()}.zip"n
+            tmp_file = f"E:/OnlineJudge/tmp/{rand_str()}.zip"
             with open(tmp_file, "wb") as f:
                 for chunk in file:
                     f.write(chunk)

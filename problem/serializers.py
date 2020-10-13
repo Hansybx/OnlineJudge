@@ -87,6 +87,7 @@ class CreateContestProblemSerializer(CreateOrEditProblemSerializer):
 class EditContestProblemSerializer(CreateOrEditProblemSerializer):
     id = serializers.IntegerField()
     contest_id = serializers.IntegerField()
+    is_drag = serializers.BooleanField()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -117,6 +118,15 @@ class ProblemAdminSerializer(BaseProblemSerializer):
         fields = "__all__"
 
 
+# added
+class ContestProblemAdminSerializer(BaseProblemSerializer):
+    _id = serializers.IntegerField()
+
+    class Meta:
+        model = Problem
+        fields = "__all__"
+
+
 class ProblemSerializer(BaseProblemSerializer):
     template = serializers.SerializerMethodField("get_public_template")
 
@@ -134,6 +144,29 @@ class ProblemSafeSerializer(BaseProblemSerializer):
         exclude = ("test_case_score", "test_case_id", "visible", "is_public",
                    "spj_code", "spj_version", "spj_compile_ok",
                    "difficulty", "submission_number", "accepted_number", "statistic_info")
+
+
+# start add
+class ContestProblemSerializer(BaseProblemSerializer):
+    template = serializers.SerializerMethodField("get_public_template")
+    _id = serializers.IntegerField()
+
+    class Meta:
+        model = Problem
+        exclude = ("test_case_score", "test_case_id", "visible", "is_public",
+                   "spj_code", "spj_version", "spj_compile_ok")
+
+
+class ContestProblemSafeSerializer(BaseProblemSerializer):
+    template = serializers.SerializerMethodField("get_public_template")
+    _id = serializers.IntegerField()
+
+    class Meta:
+        model = Problem
+        exclude = ("test_case_score", "test_case_id", "visible", "is_public",
+                   "spj_code", "spj_version", "spj_compile_ok",
+                   "difficulty", "submission_number", "accepted_number", "statistic_info")
+# end add
 
 
 class ContestProblemMakePublicSerializer(serializers.Serializer):

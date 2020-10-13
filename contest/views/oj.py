@@ -1,6 +1,7 @@
 import io
 
 import xlsxwriter
+from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.timezone import now
 from django.core.cache import cache
@@ -53,7 +54,7 @@ class ContestListAPI(APIView):
         rule_type = request.GET.get("rule_type")
         status = request.GET.get("status")
         if keyword:
-            contests = contests.filter(title__contains=keyword)
+            contests = contests.filter(Q(title__contains=keyword) | Q(teacher__contains=keyword) | Q(course_num__contains=keyword))
         if rule_type:
             contests = contests.filter(rule_type=rule_type)
         if status:
